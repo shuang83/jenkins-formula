@@ -48,3 +48,41 @@ jenkins_disable_plugin_{{ plugin }}:
     - watch_in:
       - cmd: restart_jenkins
 {% endfor %}
+
+{% for custom_plugin in jenkins.custom_plugins.installed %}
+jenkins_install_custom_plugin_{{ custom_plugin }}:
+  file.managed:
+    - unless: {{ jenkins_cli('list-plugins') }} | grep {{ custom_plugin }}
+    - onlyif:
+      - test ! -f {{ jenkins.home }}/plugins/{{ custom_plugin }}.hpi.disabled
+    - name: {{ jenkins.home }}/plugins/{{ custom_plugin }}.hpi
+    - user: {{ jenkins.user }}
+    - group: {{ jenkins.group }}
+    - source: salt://jenkins/files/plugins/{{ custom_plugin }}.hpi
+    - watch_in:
+      - cmd: restart_jenkins
+  cmd.run:
+    - onlyif:
+      - test -f {{ jenkins.home }}/plugins/{{ custom_plugin }}.hpi.disabled
+    - name: mv {{ jenkins.home }}/plugins/{{ custom_plugin }}.hpi.disabled {{ jenkins.home }}/plugins/{{ custom_plugin }}.hpi
+    - watch_in:
+      - cmd: restart_jenkins
+{% endfor %}
+
+{% for custom_plugin in jenkins.custom_plugins.disabled %}
+jenkins_disable_custom_plugin_{{ custom_plugin }}:
+  file.rename:
+    - onlyif:
+      - test -f {{ jenkins.home }}/plugins/{{ custom_plugin }}.hpi
+    - name: {{ jenkins.home }}/plugins/{{ custom_plugin }}.hpi.disabled
+    - source: {{ jenkins.home }}/plugins/{{ custom_plugin }}.hpi
+    - watch_in:
+      - cmd: restart_jenkins
+# Not sure if deleting plugin is better than just disabling it
+#   file.absent:
+#      - onlyif:
+#         - test -f {{ jenkins.home }}/plugins/{{ custom_plugin }}.hpi
+#      - name: {{ jenkins.home }}/plugins/{{ custom_plugin }}.hpi
+#      - watch_in:
+#        - cmd: restart_jenkins
+{% endfor %}

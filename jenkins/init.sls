@@ -53,6 +53,12 @@ jenkins:
       - file: jenkins config
       {% endif %}
 
+java:
+  pkg.installed:
+    - pkgs: {{ jenkins.java_pkg }}
+    - require_in:
+      - pkg: jenkins
+
 {% if grains['os_family'] in ['RedHat', 'Debian'] %}
 jenkins config:
   file.managed:

@@ -42,4 +42,9 @@
         },
         'stable': False
     },
-}, merge=salt['pillar.get']('jenkins:lookup')) %}
+        'RedHat': {
+        'java_pkg': ['java-1.8.0-openjdk'],
+        'nginx_user': 'nginx',
+        'nginx_group': 'nginx',
+    },
+}, merge=salt['pillar.get']('jenkins:lookup'), base='default') %}

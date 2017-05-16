@@ -5,7 +5,8 @@
 
 jenkins_listening:
   pkg.installed:
-    - name: {{ jenkins.netcat_pkg }}
+#    - name: {{ jenkins.netcat_pkg }}
+    - name: curl
   cmd.wait:
   #  - name: "until nc -z localhost {{ jenkins.jenkins_port }}; do sleep 1; done"
     - name: "until curl http://localhost:{{ jenkins.jenkins_port }}; do sleep 1; done"

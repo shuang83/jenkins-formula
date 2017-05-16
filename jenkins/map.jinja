@@ -48,4 +48,7 @@
         'nginx_group': 'nginx',
         'nginx_conf': '/etc/nginx/conf.d'
     },
+        'Debian': {
+          'java_pkg': ['openjdk-8-jdk']
+    },
 }, merge=salt['pillar.get']('jenkins:lookup'), base='default') %}

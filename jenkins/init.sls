@@ -24,6 +24,23 @@ jenkins_user:
     - require:
       - group: jenkins_group
 
+jenkins_user_ssh_dir:
+  file.directory:
+    - name: {{ jenkins.home }}/.ssh
+    - user: {{ jenkins.user }}
+    - group: {{ jenkins.group }}
+    - mode: 0700
+    - require: 
+      - user: jenkins_user
+
+jenkins_user_ssh_key:
+  cmd.run:
+    - name: ssh-keygen -q -N '' -f {{ jenkins.home }}/.ssh/id_rsa
+    - runas: {{ jenkins.user }}
+    - unless: test -f {{ jenkins.home}}/.ssh/id_rsa
+    - require:
+      - jenkins_user_ssh_dir
+
 jenkins:
   {% if grains['os_family'] in ['RedHat', 'Debian'] %}
     {% set repo_suffix = '' %}

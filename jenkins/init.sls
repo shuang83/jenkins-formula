@@ -76,6 +76,12 @@ java:
     - require_in:
       - pkg: jenkins
 
+ remove_packages:
+  pkg.removed:
+    - pkgs: {{ jenkins.remove_packages }}
+    - require_in:
+      - pkg: java
+
 {% if grains['os_family'] in ['RedHat', 'Debian'] %}
 jenkins config:
   file.managed:
